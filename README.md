@@ -149,9 +149,9 @@ cd ../server && npm run build && npm start   # serves API + web/dist on :4000
 - [x] Live demo (deploy URL added at submission time)
 - [x] Public repo + setup instructions (this README)
 - [x] README explains track, problem, Cloudinary usage, testing
-- [ ] 2–4 min demo video showing the Cloudinary workflow (record before submission)
+- [x] 2–4 min demo video showing the Cloudinary workflow — [watch on YouTube](https://youtu.be/mWsPBkWTL0M) (3:09)
 - [x] Team details (solo — Om, [@devilking7x](https://github.com/devilking7x))
-- [ ] Cloudinary feedback survey (mandatory — completes before submission)
+- [x] Cloudinary feedback survey (mandatory — submitted)
 - [x] No API keys or credentials in the repo
 
 ## License

@@ -8,9 +8,9 @@ FONTB=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
 FONTN=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 mkdir -p "$T"
 
-# 0. Check shots
+# 0. Check shots (shot02 skipped: photo was placed via API pipeline, no progress bar to capture)
 missing=0
-for n in 01 02 03 04 05 06 07 08 09; do
+for n in 01 03 04 05 06 07 08 09; do
   [ -f "$S/shot$n.png" ] || { echo "MISSING: shots/shot$n.png"; missing=1; }
 done
 [ $missing -eq 0 ] || { echo "Add the missing screenshots, then re-run."; exit 1; }
@@ -25,7 +25,8 @@ echo "Narration total: $(awk "BEGIN{print $D1+$D2+$D3+$D4+$D5+$D6}")s | Video to
 # 2. Slide plan: shot|duration (seg4 split: slider hero gets ~1.5x dwell)
 S4A=$(awk "BEGIN{print $D4*0.31}"); S4B=$(awk "BEGIN{print $D4*0.31}")
 S4C=$(awk "BEGIN{print $D4*0.23}"); S4D=$(awk "BEGIN{print $D4-($S4A+$S4B+$S4C)}")
-PLAN="01|$D1 02|$D2 03|$D3 04|$S4A 05|$S4B 06|$S4C 07|$S4D 08|$D5 09|$D6"
+S23=$(awk "BEGIN{print $D2+$D3}")
+PLAN="01|$D1 03|$S23 04|$S4A 05|$S4B 06|$S4C 07|$S4D 08|$D5 09|$D6"
 
 # 3. Build slides with subtle alternating zoom/pan
 i=0
@@ -56,7 +57,7 @@ ffmpeg -y -v error -f lavfi -i color=c=0x0b0b10:s=1280x720:r=25:d=5 \
   -c:v libx264 -preset medium -pix_fmt yuv420p -t 5 "$T/end.mp4"
 
 # 5. Concat video
-{ echo "file '$T/title.mp4'"; for k in $(seq 1 10); do echo "file '$T/slide$(printf %02d $k).mp4'"; done; echo "file '$T/end.mp4'"; } > "$T/list.txt"
+{ echo "file '$T/title.mp4'"; for k in $(seq 1 8); do echo "file '$T/slide$(printf %02d $k).mp4'"; done; echo "file '$T/end.mp4'"; } > "$T/list.txt"
 ffmpeg -y -v error -f concat -safe 0 -i "$T/list.txt" -c copy "$T/body.mp4"
 
 # 6. Concat + pad narration to full length
