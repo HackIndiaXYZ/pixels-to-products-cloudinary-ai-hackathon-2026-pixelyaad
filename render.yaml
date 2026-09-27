@@ -1,0 +1,13 @@
+# Render Blueprint for Pixelyaad — one web service serving API + built frontend.
+# Deploy: Render dashboard → New → Blueprint → connect this repo.
+services:
+  - type: web
+    name: pixelyaad
+    runtime: node
+    plan: free
+    buildCommand: npm --prefix server install && npm --prefix server run build && npm --prefix web install && npm --prefix web run build
+    startCommand: npm --prefix server start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
