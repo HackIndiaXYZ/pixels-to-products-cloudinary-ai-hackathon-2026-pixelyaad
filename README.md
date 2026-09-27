@@ -18,15 +18,15 @@
 
 **Demo URL:** https://pixelyaad.onrender.com
 
+**Demo video (3:09):** https://youtu.be/mWsPBkWTL0M
+
 Try it: upload any photo → watch the AI tags appear → drag the restore slider → generate a memory card.
 
 ## Screenshots
 
-<!-- Add before submission: gallery view, before/after restore slider, memory card -->
-
 | Gallery | Restore slider | Memory card |
 |---|---|---|
-| _(coming)_ | _(coming)_ | _(coming)_ |
+| ![Gallery view](screenshots/gallery.png) | ![Before/after restore slider](screenshots/restore-slider.png) | ![Shareable 4:5 memory card](screenshots/memory-card.png) |
 
 ---
 
