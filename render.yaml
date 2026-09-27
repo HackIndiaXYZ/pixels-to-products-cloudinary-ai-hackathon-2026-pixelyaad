@@ -11,3 +11,10 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20.18.0
+      # Public Cloudinary config (unsigned uploads — no secrets; baked into the
+      # client bundle at build time by Vite). Without these the upload UI stays
+      # disabled on the deployed site.
+      - key: VITE_CLOUDINARY_CLOUD_NAME
+        value: grxcwyre
+      - key: VITE_CLOUDINARY_UPLOAD_PRESET
+        value: Pixelyaad

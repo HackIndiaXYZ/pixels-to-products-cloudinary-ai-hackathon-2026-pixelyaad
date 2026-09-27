@@ -1,0 +1,1 @@
+Every family has a shoebox of fading photographs. Memories that grow quieter every year. Pixelyaad is an AI Photo Memory Vault that brings them back to life. Built for the Cloudinary AI Hackathon, Track one: AI Media Pipelines. Upload an old photo, and watch artificial intelligence restore it, describe it, and keep it searchable forever.
