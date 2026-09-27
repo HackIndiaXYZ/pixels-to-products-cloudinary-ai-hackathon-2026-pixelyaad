@@ -1,10 +1,32 @@
 # Pixelyaad — AI Photo Memory Vault
 
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?logo=cloudinary&logoColor=white)
+![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![HackIndia 2026](https://img.shields.io/badge/HackIndia-2026-FF6B35)
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
+
 **Pixels to Products — Cloudinary AI Hackathon 2026 · Track 1: AI Media Pipelines**
 
 *Yaadein jo kabhi fade nahi hoti.* Upload your old and family photos — Pixelyaad restores them with AI, auto-tags them, suggests captions (English + हिंदी), and turns them into a searchable memory vault with shareable memory cards. Every pixel of the magic runs through Cloudinary.
 
 **Team:** Solo — Om ([@devilking7x](https://github.com/devilking7x))
+
+---
+
+## 🔴 Live Demo
+
+**Demo URL:** https://pixelyaad.onrender.com
+
+Try it: upload any photo → watch the AI tags appear → drag the restore slider → generate a memory card.
+
+## Screenshots
+
+<!-- Add before submission: gallery view, before/after restore slider, memory card -->
+
+| Gallery | Restore slider | Memory card |
+|---|---|---|
+| _(coming)_ | _(coming)_ | _(coming)_ |
 
 ---
 

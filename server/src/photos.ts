@@ -37,10 +37,20 @@ photosRouter.post('/', async (req, res, next) => {
       res.status(400).json({ error: 'publicId is required' });
       return;
     }
+    // Only characters Cloudinary public IDs can legitimately contain.
+    // Blocks transformation/path injection (e.g. "x/e_blur:2000/y") since the
+    // publicId is interpolated into delivery URLs.
+    const cleanId = publicId.trim();
+    if (!/^[A-Za-z0-9_\-/.]{1,200}$/.test(cleanId) || cleanId.includes('..')) {
+      res.status(400).json({ error: 'Invalid publicId' });
+      return;
+    }
     const record: PhotoRecord = {
       id: randomUUID(),
-      publicId: publicId.trim(),
-      tags: Array.isArray(tags) ? tags.filter((t): t is string => typeof t === 'string') : [],
+      publicId: cleanId,
+      tags: Array.isArray(tags)
+        ? tags.filter((t): t is string => typeof t === 'string').map((t) => t.slice(0, 100)).slice(0, 50)
+        : [],
       caption: typeof caption === 'string' ? caption.slice(0, 500) : '',
       createdAt: new Date().toISOString(),
     };
