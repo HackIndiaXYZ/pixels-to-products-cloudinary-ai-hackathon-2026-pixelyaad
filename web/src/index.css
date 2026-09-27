@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0a0a0e;
+  color: #e7e5e4;
+}
+
+/* Gold before/after slider */
+input[type="range"].compare-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+}
+input[type="range"].compare-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: #f5c518;
+  border: 4px solid #0a0a0e;
+  box-shadow: 0 0 0 2px #f5c518, 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+input[type="range"].compare-slider::-moz-range-thumb {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: #f5c518;
+  border: 4px solid #0a0a0e;
+  box-shadow: 0 0 0 2px #f5c518, 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+input[type="range"].compare-slider::-webkit-slider-runnable-track {
+  background: transparent;
+}
+input[type="range"].compare-slider::-moz-range-track {
+  background: transparent;
+}
+
+/* Subtle film-grain backdrop for the hero */
+.hero-glow {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(245, 197, 24, 0.12), transparent),
+    #0a0a0e;
+}
