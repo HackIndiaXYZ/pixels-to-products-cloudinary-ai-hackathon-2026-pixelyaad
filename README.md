@@ -1,14 +1,16 @@
 # Pixelyaad — AI Photo Memory Vault
 
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://pixelyaad.onrender.com)
+[![Demo video](https://img.shields.io/badge/demo_video-YouTube-red?logo=youtube)](https://youtu.be/mWsPBkWTL0M)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?logo=cloudinary&logoColor=white)
 ![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![HackIndia 2026](https://img.shields.io/badge/HackIndia-2026-FF6B35)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green)
 
-**Pixels to Products — Cloudinary AI Hackathon 2026 · Track 1: AI Media Pipelines**
+**Pixels to Products — Cloudinary AI Hackathon 2026 · Track 1: AI Media Pipelines · Team Pixelyaad**
 
-*Yaadein jo kabhi fade nahi hoti.* Upload your old and family photos — Pixelyaad restores them with AI, auto-tags them, suggests captions (English + हिंदी), and turns them into a searchable memory vault with shareable memory cards. Every pixel of the magic runs through Cloudinary.
+*Yaadein jo kabhi fade nahi hoti.* Upload your old and family photos — Pixelyaad restores them with AI, auto-tags them, suggests captions (English + हिंदी), and turns them into a searchable memory vault with shareable memory cards **and public share links** for any memory. Every pixel of the magic runs through Cloudinary.
 
 **Team:** Solo — Om ([@devilking7x](https://github.com/devilking7x))
 
@@ -21,6 +23,13 @@
 **Demo video (3:09):** https://youtu.be/mWsPBkWTL0M
 
 Try it: upload any photo → watch the AI tags appear → drag the restore slider → generate a memory card.
+
+## ⚡ Judge quick-start (60 seconds)
+
+1. Open the **live demo** above and drop any photo in.
+2. Watch the **AI tags** appear; flip the caption **English ⇄ हिंदी**.
+3. Open the photo and drag the **before/after restore slider**.
+4. Hit **🔗 Share** → copy the link → open it in an incognito window: a standalone gold memory-card page, no login needed.
 
 ## Screenshots
 
@@ -35,6 +44,16 @@ Try it: upload any photo → watch the AI tags appear → drag the restore slide
 Old family photos fade, tear, and get lost in phone galleries. Existing "photo organizer" apps just store files — they don't *understand* what's in the picture, they can't restore a 30-year-old faded print, and searching means scrolling forever. Pixelyaad treats every photo as a memory with a story: AI sees the photo, tags it, captions it, restores it, and makes it findable.
 
 ## How Cloudinary powers it (Track 1: AI Media Pipelines)
+
+```
+Browser ──unsigned upload (no secret)──▶ Cloudinary
+   │                                          │ ▲
+   │ metadata only (publicId, tags, caption)  │ │ AI: auto-tagging, e_gen_restore,
+   ▼                                          │ │ e_improve, l_text overlays
+Express API (atomic JSON store)               │ │
+   │                                          ▼ │
+   └────────────── Vault UI ◀── public delivery URLs ─┘
+```
 
 Media goes in → Cloudinary's AI does something smart automatically → the output is useful. Every row below is live in the app, not a mockup.
 
@@ -112,7 +131,8 @@ cd ../server && npm run build && npm start   # serves API + web/dist on :4000
 2. **Restore:** open a photo → drag the before/after slider (left = original, right = `e_gen_restore`). Toggle ✨ Restore / 💡 Enhance.
 3. **Search:** type a tag or caption word in the search box (e.g. `dog`) → matching memories filter instantly.
 4. **Memory card:** open a photo → "Memory card dekho" → 4:5 card with gold caption overlay renders from a single Cloudinary URL → "Full size kholo" gives the shareable link.
-5. **API smoke test:**
+5. **Share link:** open a photo → "🔗 Share" → "Copy" → open the link in an incognito window → the standalone memory-card page loads with no login. "Share revoke karo" → the link stops working (404).
+6. **API smoke test:**
    ```bash
    curl localhost:4000/api/health
    curl -X POST localhost:4000/api/photos \
@@ -120,7 +140,11 @@ cd ../server && npm run build && npm start   # serves API + web/dist on :4000
      -d '{"publicId":"sample","tags":["dog","garden"],"caption":"Test yaad"}'
    curl 'localhost:4000/api/photos/search?q=dog'
    ```
-6. **Live Cloudinary check (unsigned upload, no secret):**
+   # Share flow:
+   # TOKEN=$(curl -s -X POST localhost:4000/api/photos/<id>/share | jq -r .token)
+   # curl localhost:4000/api/photos/shared/$TOKEN        # public fields only
+   # curl -X DELETE localhost:4000/api/photos/<id>/share # revoke → 404 after
+7. **Live Cloudinary check (unsigned upload, no secret):**
    ```bash
    curl -X POST https://api.cloudinary.com/v1_1/grxcwyre/image/upload \
      -F file=@photo.jpg -F upload_preset=Pixelyaad -F tags=pixelyaad
@@ -135,11 +159,11 @@ cd ../server && npm run build && npm start   # serves API + web/dist on :4000
 │   ├── src/lib/cloudinary.ts  # URL builders + unsigned upload (fetch + XHR progress)
 │   ├── src/lib/captions.ts    # tag → caption templates (English + Hindi)
 │   ├── src/lib/api.ts         # typed client for the Express API
-│   ├── src/components/        # Dropzone, Gallery, PhotoDetail, SearchBar
+│   ├── src/components/        # Dropzone, Gallery, PhotoDetail, SearchBar, ShareView
 │   └── .env / .env.example    # PUBLIC: cloud name + unsigned preset only
 ├── server/                    # Express + TypeScript
 │   ├── src/index.ts           # API + serves web/dist in production
-│   ├── src/photos.ts          # CRUD: list / search / create / delete
+│   ├── src/photos.ts          # list / search / create / delete + share / revoke / shared lookup
 │   └── src/store.ts           # atomic JSON store (no Cloudinary secret needed)
 └── README.md
 ```
