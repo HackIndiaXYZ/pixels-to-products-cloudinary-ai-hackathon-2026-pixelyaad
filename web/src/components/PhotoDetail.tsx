@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
 import { deliveryUrl, enhancedUrl, memoryCardUrl, restoreUrl } from '../lib/cloudinary';
 import type { Photo } from '../lib/types';
 
@@ -6,16 +7,64 @@ interface Props {
   photo: Photo;
   onClose: () => void;
   onDelete: (id: string) => Promise<void>;
+  onShareChange: (id: string, token: string | null) => void;
 }
 
 type ViewMode = 'restored' | 'enhanced';
 
-export default function PhotoDetail({ photo, onClose, onDelete }: Props) {
+export default function PhotoDetail({ photo, onClose, onDelete, onShareChange }: Props) {
   const [pos, setPos] = useState(50);
   const [mode, setMode] = useState<ViewMode>('restored');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
+  const [shareToken, setShareToken] = useState<string | null>(photo.shareToken ?? null);
+  const [shareBusy, setShareBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // A different photo can reuse this dialog — keep the share panel in sync.
+  useEffect(() => {
+    setShareToken(photo.shareToken ?? null);
+    setCopied(false);
+  }, [photo.id, photo.shareToken]);
+
+  const shareUrl = shareToken ? `${window.location.origin}/share/${shareToken}` : null;
+
+  const handleCreateShare = async () => {
+    setShareBusy(true);
+    try {
+      const { token } = await api.createShare(photo.id);
+      setShareToken(token);
+      onShareChange(photo.id, token);
+    } finally {
+      setShareBusy(false);
+    }
+  };
+
+  const handleRevokeShare = async () => {
+    setShareBusy(true);
+    try {
+      await api.revokeShare(photo.id);
+      setShareToken(null);
+      onShareChange(photo.id, null);
+    } finally {
+      setShareBusy(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+    } catch {
+      // Clipboard API unavailable (non-secure context) — select the input instead.
+      document.getElementById('share-url-input')?.focus();
+      (document.getElementById('share-url-input') as HTMLInputElement | null)?.select();
+      return;
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  };
 
   const before = deliveryUrl(photo.publicId);
   const after = mode === 'restored' ? restoreUrl(photo.publicId) : enhancedUrl(photo.publicId);
@@ -142,6 +191,18 @@ export default function PhotoDetail({ photo, onClose, onDelete }: Props) {
             </button>
             <button
               type="button"
+              onClick={handleCreateShare}
+              disabled={shareBusy || Boolean(shareToken)}
+              className={`rounded-full border px-4 py-2 text-sm transition ${
+                shareToken
+                  ? 'border-amber-400/50 bg-amber-400/10 font-semibold text-amber-200'
+                  : 'border-stone-700 text-stone-300 hover:border-amber-400/40 hover:text-amber-200'
+              } disabled:opacity-60`}
+            >
+              {shareBusy ? '…' : shareToken ? '🔗 Shared ✓' : '🔗 Share'}
+            </button>
+            <button
+              type="button"
               onClick={handleDelete}
               disabled={deleting}
               className={`rounded-full border px-4 py-2 text-sm transition ${
@@ -156,6 +217,41 @@ export default function PhotoDetail({ photo, onClose, onDelete }: Props) {
               Saved {new Date(photo.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
             </span>
           </div>
+
+          {/* Share panel */}
+          {shareUrl && (
+            <div className="rounded-xl border border-amber-400/20 bg-black/40 p-4">
+              <p className="mb-2 text-center text-xs text-stone-400">
+                🔗 Public link — jiske paas yeh link hai woh yaad dekh sakta hai, bina login ke
+              </p>
+              <div className="flex gap-2">
+                <input
+                  id="share-url-input"
+                  readOnly
+                  value={shareUrl}
+                  onFocus={(e) => e.target.select()}
+                  className="min-w-0 flex-1 rounded-lg border border-stone-700 bg-black/60 px-3 py-2 text-xs text-amber-100"
+                />
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="shrink-0 rounded-lg bg-amber-400 px-4 py-2 text-xs font-semibold text-black transition hover:bg-amber-300"
+                >
+                  {copied ? '✓ Copied!' : 'Copy'}
+                </button>
+              </div>
+              <div className="mt-2 text-center">
+                <button
+                  type="button"
+                  onClick={handleRevokeShare}
+                  disabled={shareBusy}
+                  className="text-xs text-stone-500 underline-offset-2 hover:text-red-300 hover:underline disabled:opacity-60"
+                >
+                  Share revoke karo (link kaam karna band)
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Memory card preview */}
           {cardOpen && (

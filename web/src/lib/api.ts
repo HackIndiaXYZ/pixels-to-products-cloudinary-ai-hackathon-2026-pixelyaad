@@ -1,4 +1,4 @@
-import type { Photo } from './types';
+import type { Photo, SharedPhoto } from './types';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -26,4 +26,8 @@ export const api = {
   savePhoto: (photo: NewPhoto) =>
     req<Photo>('/api/photos', { method: 'POST', body: JSON.stringify(photo) }),
   deletePhoto: (id: string) => req<void>(`/api/photos/${id}`, { method: 'DELETE' }),
+  createShare: (id: string) =>
+    req<{ token: string }>(`/api/photos/${id}/share`, { method: 'POST' }),
+  revokeShare: (id: string) => req<void>(`/api/photos/${id}/share`, { method: 'DELETE' }),
+  getShared: (token: string) => req<SharedPhoto>(`/api/photos/shared/${token}`),
 };

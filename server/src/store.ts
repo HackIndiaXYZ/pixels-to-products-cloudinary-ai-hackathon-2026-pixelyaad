@@ -7,6 +7,8 @@ export interface PhotoRecord {
   tags: string[];
   caption: string;
   createdAt: string;
+  /** Public share token; when set, the photo is viewable via /share/:token. */
+  shareToken?: string | null;
 }
 
 const DATA_FILE = path.resolve(process.cwd(), 'data', 'photos.json');
@@ -51,6 +53,22 @@ export async function deletePhoto(id: string): Promise<boolean> {
   if (next.length === photos.length) return false;
   await writeAll(next);
   return true;
+}
+
+/** Set (or revoke with null) the public share token for a photo. */
+export async function setShareToken(id: string, token: string | null): Promise<PhotoRecord | null> {
+  const photos = await readAll();
+  const photo = photos.find((p) => p.id === id);
+  if (!photo) return null;
+  photo.shareToken = token;
+  await writeAll(photos);
+  return photo;
+}
+
+/** Public lookup for shared links — never exposes internal ids. */
+export async function findByShareToken(token: string): Promise<PhotoRecord | null> {
+  const photos = await readAll();
+  return photos.find((p) => p.shareToken === token) ?? null;
 }
 
 export async function searchPhotos(query: string): Promise<PhotoRecord[]> {  const q = query.trim().toLowerCase();

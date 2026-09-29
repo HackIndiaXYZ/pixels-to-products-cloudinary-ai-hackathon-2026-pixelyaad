@@ -58,6 +58,7 @@ Media goes in → Cloudinary's AI does something smart automatically → the out
 - 🖼️ Before/after **restore slider** (`e_gen_restore`) + **enhance** toggle (`e_improve`)
 - 🔍 Search across tags and captions ("shaadi", "dog", …)
 - 🃏 **Memory cards** — 4:5 shareable images with gold caption overlay (WhatsApp/Instagram-ready URL)
+- 🔗 **Public share links** — "Share" on any memory → revokable `/share/:token` link opening a standalone gold memory-card page, no login needed
 - 🗑️ Delete memories; dark + gold theme; loading skeletons; toasts; mobile-friendly
 
 ## Setup

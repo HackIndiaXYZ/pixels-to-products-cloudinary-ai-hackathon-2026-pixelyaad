@@ -3,6 +3,7 @@ import Dropzone from './components/Dropzone';
 import Gallery from './components/Gallery';
 import PhotoDetail from './components/PhotoDetail';
 import SearchBar from './components/SearchBar';
+import ShareView from './components/ShareView';
 import { api } from './lib/api';
 import { isCloudinaryConfigured } from './lib/cloudinary';
 import type { Photo } from './lib/types';
@@ -17,7 +18,14 @@ interface Toast {
 
 let toastSeq = 0;
 
+/** /share/:token → standalone public memory page (server serves index.html for it). */
+function getShareToken(): string | null {
+  const m = window.location.pathname.match(/^\/share\/([A-Za-z0-9_-]{1,64})$/);
+  return m ? m[1] : null;
+}
+
 export default function App() {
+  const [shareToken] = useState<string | null>(() => getShareToken());
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [selected, setSelected] = useState<Photo | null>(null);
   const [query, setQuery] = useState('');
@@ -83,6 +91,16 @@ export default function App() {
     [notify],
   );
 
+  const handleShareChange = useCallback((id: string, token: string | null) => {
+    setPhotos((prev) => prev.map((p) => (p.id === id ? { ...p, shareToken: token } : p)));
+    setSelected((prev) => (prev && prev.id === id ? { ...prev, shareToken: token } : prev));
+  }, []);
+
+  // Public share route — renders the standalone memory page instead of the vault.
+  if (shareToken) {
+    return <ShareView token={shareToken} />;
+  }
+
   return (
     <div className="hero-glow min-h-screen">
       {/* Toasts */}
@@ -147,7 +165,12 @@ export default function App() {
       </main>
 
       {selected && (
-        <PhotoDetail photo={selected} onClose={() => setSelected(null)} onDelete={handleDelete} />
+        <PhotoDetail
+          photo={selected}
+          onClose={() => setSelected(null)}
+          onDelete={handleDelete}
+          onShareChange={handleShareChange}
+        />
       )}
     </div>
   );
